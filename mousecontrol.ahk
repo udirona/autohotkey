@@ -1,4 +1,11 @@
-; Using Keyboard Numpad as a Mouse -- by deguix
+; Using Keyboard as a Mouse
+; changes by udirona
+;  using wersdfxcv instead of Numblock
+;  small code refactoring
+
+
+
+; original wirtten -- by deguix
 ; http://www.autohotkey.com
 ; This script makes mousing with your keyboard almost as easy
 ; as using a real mouse (maybe even easier for some tasks).
@@ -7,12 +14,7 @@
 ; acceleration, and "axis inversion".
 
 /*
-o------------------------------------------------------------o
-|Using Keyboard Numpad as a Mouse                            |
-(------------------------------------------------------------)
-| By deguix           / A Script file for AutoHotkey 1.0.22+ |
-|                    ----------------------------------------|
-|                                                            |
+|  A Script file for AutoHotkey 1.0.22+ |
 |    This script is an example of use of AutoHotkey. It uses |
 | the remapping of numpad keys of a keyboard to transform it |
 | into a mouse. Some features are the acceleration which     |
@@ -38,7 +40,6 @@ o------------------------------------------------------------o
 | NumpadEnd/Down/PgDn/  | Mouse movement.                    |
 | /Left/Right/Home/Up/  |                                    |
 | /PgUp                 |                                    |
-|                       |                                    |
 |-----------------------|------------------------------------|
 | NumLock (toggled on)  | Activates mouse speed adj. mode.   |
 |-----------------------|------------------------------------|
@@ -59,7 +60,7 @@ o------------------------------------------------------------o
 |                       | = inversed controls).              |
 |------------------------------------------------------------|
 | * = These options are affected by the mouse wheel speed    |
-| adjusted on Control Panel. If you don't have a mouse with  |
+| adjusted on Control Panel. if you don't have a mouse with  |
 | wheel, the default is 3 +/- lines per option button press. |
 o------------------------------------------------------------o
 */
@@ -68,6 +69,7 @@ o------------------------------------------------------------o
 
 #SingleInstance force
 #MaxHotkeysPerInterval 500
+#KeyHistory 0
 
 ; Using the keyboard hook to implement the Numpad hotkeys prevents
 ; them from interfering with the generation of ANSI characters such
@@ -89,11 +91,29 @@ MouseWheelMaxSpeed = 5
 
 MouseRotationAngle = 0
 
+MOVE_UP            = e
+MOVE_DOWN          = d
+MOVE_LEFT          = s
+MOVE_RIGHT         = f
+MOVE_UP_LEFT       = w 
+MOVE_UP_RIGHT      = r
+MOVE_DOWN_LEFT     = x
+MOVE_DOWN_RIGHT    = c
+MOUSE_LEFT_CLICK   = q
+MOUSE_MIDDLE_CLICK = a
+MOUSE_RIGHT_CLICK  = z
+
 ;END OF CONFIG SECTION
+
+
+
+
+
+
 
 ;This is needed or key presses would faulty send their natural
 ;actions. Like NumpadDiv would send sometimes "/" to the
-;screen.       
+;screen.
 #InstallKeybdHook
 
 Temp = 0
@@ -106,7 +126,7 @@ MouseRotationAnglePart = %MouseRotationAngle%
 ;
 ;For example: 22.5� when pressing NumpadUp:
 ;  First it would move upwards until the speed
-;  to the side reaches 1.
+;  to the side reaches 1
 MouseRotationAnglePart /= 45
 
 MouseCurrentAccelerationSpeed = 0
@@ -118,37 +138,40 @@ MouseWheelCurrentSpeed = %MouseSpeed%
 SetKeyDelay, -1
 SetMouseDelay, -1
 
+
 ;; Hotkey, *NumpadIns, ButtonLeftClickIns
 ;; Hotkey, *NumpadClear, ButtonMiddleClickClear
 ;; Hotkey, *NumpadDel, ButtonRightClickDel
 ;; Hotkey, *NumpadDiv, ButtonX1Click
 ;; Hotkey, *NumpadMult, ButtonX2Click
-;; 
+;;
 ;; Hotkey, *NumpadSub, ButtonWheelUp
 ;; Hotkey, *NumpadAdd, ButtonWheelDown
-;; 
- Hotkey, *e, ButtonUp
- Hotkey, *d, ButtonDown
- Hotkey, *s, ButtonLeft
- Hotkey, *f, ButtonRight
- Hotkey, *w, ButtonUpLeft
- Hotkey, *r, ButtonUpRight
- Hotkey, *x, ButtonLeftClick
- Hotkey, *c, ButtonMiddleClick
- Hotkey, *v, ButtonRightClick
+;;
+ Hotkey, *%MOVE_UP%, ButtonUp
+ Hotkey, *%MOVE_DOWN%, ButtonDown
+ Hotkey, *%MOVE_LEFT%, ButtonLeft
+ Hotkey, *%MOVE_RIGHT%, ButtonRight
+ Hotkey, *%MOVE_UP_LEFT%, ButtonUpLeft
+ Hotkey, *%MOVE_UP_RIGHT%, ButtonUpRight
+ Hotkey, *%MOVE_DOWN_LEFT%, ButtonDownLeft
+ Hotkey, *%MOVE_DOWN_RIGHT%, ButtonDownRight
+ Hotkey, *%MOUSE_LEFT_CLICK%, ButtonLeftClick
+ Hotkey, *%MOUSE_MIDDLE_CLICK%, ButtonMiddleClick
+ Hotkey, *%MOUSE_RIGHT_CLICK%, ButtonRightClick
 ;; Hotkey, *, ButtonDownLeft
 ;; Hotkey, *, ButtonDownRight
-;; 
+;;
 ;; Hotkey, Numpad8, ButtonSpeedUp
 ;; Hotkey, Numpad2, ButtonSpeedDown
 ;; Hotkey, Numpad7, ButtonAccelerationSpeedUp
 ;; Hotkey, Numpad1, ButtonAccelerationSpeedDown
 ;; Hotkey, Numpad9, ButtonMaxSpeedUp
 ;; Hotkey, Numpad3, ButtonMaxSpeedDown
-;; 
+;;
 ;; Hotkey, Numpad6, ButtonRotationAngleUp
 ;; Hotkey, Numpad4, ButtonRotationAngleDown
-;; 
+;;
 ;; Hotkey, !Numpad8, ButtonWheelSpeedUp
 ;; Hotkey, !Numpad2, ButtonWheelSpeedDown
 ;; Hotkey, !Numpad7, ButtonWheelAccelerationSpeedUp
@@ -167,62 +190,67 @@ return
   ; which in turn prevents toggling of the ScrollLock state/light:
   KeyWait, ScrollLock
   GetKeyState, ScrollLockState, ScrollLock, T
-  If ScrollLockState = D
+  if ScrollLockState = D
   {
-   ;; wer
-   ;; sdf
-   ;; xcv
-    Hotkey, *w, On
-    Hotkey, *e, On
-    Hotkey, *r, On
-    Hotkey, *s, On
-    Hotkey, *d, On
-    Hotkey, *f, On
-    Hotkey, *x, On
-    Hotkey, *c, On
-    Hotkey, *v, On
+    Hotkey, *%MOVE_UP%, On
+    Hotkey, *%MOVE_DOWN%, On
+    Hotkey, *%MOVE_LEFT%, On
+    Hotkey, *%MOVE_RIGHT%, On
+    Hotkey, *%MOVE_UP_LEFT%, On
+    Hotkey, *%MOVE_UP_RIGHT%, On
+    Hotkey, *%MOVE_DOWN_LEFT%, On 
+    Hotkey, *%MOVE_DOWN_RIGHT%, On
+    Hotkey, *%MOUSE_LEFT_CLICK%, On 
+    Hotkey, *%MOUSE_MIDDLE_CLICK%, On
+    Hotkey, *%MOUSE_RIGHT_CLICK%, On
+
   }
   else
   {
-    Hotkey, *w, Off
-    Hotkey, *e, Off
-    Hotkey, *r, Off
-    Hotkey, *s, Off
-    Hotkey, *d, Off
-    Hotkey, *f, Off
-    Hotkey, *x, Off
-    Hotkey, *c, Off
-    Hotkey, *v, Off
+    Hotkey, *%MOVE_UP%, Off
+    Hotkey, *%MOVE_DOWN%, Off
+    Hotkey, *%MOVE_LEFT%, Off
+    Hotkey, *%MOVE_RIGHT%, Off
+    Hotkey, *%MOVE_UP_LEFT%, Off
+    Hotkey, *%MOVE_UP_RIGHT%, Off
+    Hotkey, *%MOVE_DOWN_LEFT%, Off
+    Hotkey, *%MOVE_DOWN_RIGHT%, Off
+    Hotkey, *%MOUSE_LEFT_CLICK%, Off 
+    Hotkey, *%MOUSE_MIDDLE_CLICK%, Off
+    Hotkey, *%MOUSE_RIGHT_CLICK%, Off
   }
 return
+
 
 ;Mouse click support
 
 ButtonLeftClick:
   GetKeyState, already_down_state, LButton
-  If already_down_state = D
+  if already_down_state = D
     return
   Button2 = Numpad0
   ButtonClick = Left
   Goto ButtonClickStart
-  ButtonLeftClickIns:
+
+ButtonLeftClickIns:
   GetKeyState, already_down_state, LButton
-  If already_down_state = D
+  if already_down_state = D
     return
   Button2 = NumpadIns
   ButtonClick = Left
   Goto ButtonClickStart
 
-  ButtonMiddleClick:
+ButtonMiddleClick:
   GetKeyState, already_down_state, MButton
-  If already_down_state = D
+  if already_down_state = D
     return
   Button2 = Numpad5
   ButtonClick = Middle
   Goto ButtonClickStart
-  ButtonMiddleClickClear:
+
+ButtonMiddleClickClear:
   GetKeyState, already_down_state, MButton
-  If already_down_state = D
+  if already_down_state = D
     return
   Button2 = NumpadClear
   ButtonClick = Middle
@@ -230,14 +258,15 @@ ButtonLeftClick:
 
 ButtonRightClick:
   GetKeyState, already_down_state, RButton
-  If already_down_state = D
+  if already_down_state = D
     return
   Button2 = NumpadDot
   ButtonClick = Right
   Goto ButtonClickStart
-  ButtonRightClickDel:
+
+ButtonRightClickDel:
   GetKeyState, already_down_state, RButton
-  If already_down_state = D
+  if already_down_state = D
     return
   Button2 = NumpadDel
   ButtonClick = Right
@@ -245,7 +274,7 @@ ButtonRightClick:
 
 ButtonX1Click:
   GetKeyState, already_down_state, XButton1
-  If already_down_state = D
+  if already_down_state = D
     return
   Button2 = NumpadDiv
   ButtonClick = X1
@@ -253,7 +282,7 @@ ButtonX1Click:
 
 ButtonX2Click:
   GetKeyState, already_down_state, XButton2
-  If already_down_state = D
+  if already_down_state = D
     return
   Button2 = NumpadMult
   ButtonClick = X2
@@ -274,7 +303,6 @@ ButtonClickEnd:
 return
 
 ;Mouse movement support
-
 ButtonSpeedUp:
   MouseSpeed++
   ToolTip, Mouse speed: %MouseSpeed% pixels
@@ -282,9 +310,9 @@ ButtonSpeedUp:
 return
 
 ButtonSpeedDown:
-  If MouseSpeed > 1
+  if MouseSpeed > 1
     MouseSpeed--
-  If MouseSpeed = 1
+  if MouseSpeed = 1
     ToolTip, Mouse speed: %MouseSpeed% pixel
   else
     ToolTip, Mouse speed: %MouseSpeed% pixels
@@ -298,9 +326,9 @@ ButtonAccelerationSpeedUp:
 return
 
 ButtonAccelerationSpeedDown:
-  If MouseAccelerationSpeed > 1
+  if MouseAccelerationSpeed > 1
     MouseAccelerationSpeed--
-  If MouseAccelerationSpeed = 1
+  if MouseAccelerationSpeed = 1
     ToolTip, Mouse acceleration speed: %MouseAccelerationSpeed% pixel
   else
     ToolTip, Mouse acceleration speed: %MouseAccelerationSpeed% pixels
@@ -314,9 +342,9 @@ ButtonMaxSpeedUp:
 return
 
 ButtonMaxSpeedDown:
-  If MouseMaxSpeed > 1
+  if MouseMaxSpeed > 1
     MouseMaxSpeed--
-  If MouseMaxSpeed = 1
+  if MouseMaxSpeed = 1
     ToolTip, Mouse maximum speed: %MouseMaxSpeed% pixel
   else
     ToolTip, Mouse maximum speed: %MouseMaxSpeed% pixels
@@ -325,7 +353,7 @@ return
 
 ButtonRotationAngleUp:
   MouseRotationAnglePart++
-  If MouseRotationAnglePart >= 8
+  if MouseRotationAnglePart >= 8
     MouseRotationAnglePart = 0
   MouseRotationAngle = %MouseRotationAnglePart%
   MouseRotationAngle *= 45
@@ -335,13 +363,14 @@ return
 
 ButtonRotationAngleDown:
   MouseRotationAnglePart--
-  If MouseRotationAnglePart < 0
+  if MouseRotationAnglePart < 0
     MouseRotationAnglePart = 7
   MouseRotationAngle = %MouseRotationAnglePart%
   MouseRotationAngle *= 45
   ToolTip, Mouse rotation angle: %MouseRotationAngle%�
   SetTimer, RemoveToolTip, 1000
 return
+
 
 ButtonUp:
 ButtonDown:
@@ -351,9 +380,7 @@ ButtonUpLeft:
 ButtonUpRight:
 ButtonDownLeft:
 ButtonDownRight:
-
-
-              If Button <> 0
+              if Button <> 0
               {
                 IfNotInString, A_ThisHotkey, %Button%
                 {
@@ -364,9 +391,9 @@ ButtonDownRight:
               StringReplace, Button, A_ThisHotkey, *
 
               ButtonAccelerationStart:
-              If MouseAccelerationSpeed >= 1
+              if MouseAccelerationSpeed >= 1
               {
-                If MouseMaxSpeed > %MouseCurrentSpeed%
+                if MouseMaxSpeed > %MouseCurrentSpeed%
                 {
                   Temp = 0.001
                   Temp *= %MouseAccelerationSpeed%
@@ -409,7 +436,7 @@ ButtonDownRight:
                     Goto EndMouseCurrentSpeedToDirectionCalculation
                 }
               }
-              
+
               EndMouseCurrentSpeedToDirectionCalculation:
               { ;MouseRotationAngle convertion to speed of 90 degrees to right
                 MouseCurrentSpeedToSide = %MouseRotationAngle%
@@ -430,7 +457,7 @@ ButtonDownRight:
                     MouseCurrentSpeedToSide -= %Temp%
                     Goto EndMouseCurrentSpeedToSideCalculation
                 }
-                if (Temp >= 2) and (Temp < 3) 
+                if (Temp >= 2) and (Temp < 3)
                 {
                     MouseCurrentSpeedToSide = 0
                     Temp -= 2
@@ -452,7 +479,7 @@ ButtonDownRight:
                 Temp = %MouseRotationAnglePart%
                 Transform, Temp, Mod, %Temp%, 2
 
-                If Button = e
+                if (Button = MOVE_UP)
                 {
                   if Temp = 1
                   {
@@ -462,7 +489,7 @@ ButtonDownRight:
                   MouseCurrentSpeedToDirection *= -1
                   MouseMove, %MouseCurrentSpeedToSide%, %MouseCurrentSpeedToDirection%, 0, R
                 }
-                else if Button = d
+                else if (Button = MOVE_DOWN)
                 {
                   if Temp = 1
                   {
@@ -472,7 +499,7 @@ ButtonDownRight:
                   MouseCurrentSpeedToSide *= -1
                   MouseMove, %MouseCurrentSpeedToSide%, %MouseCurrentSpeedToDirection%, 0, R
                 }
-                else if Button = s
+                else if (Button = MOVE_LEFT)
                 {
                   if Temp = 1
                   {
@@ -483,7 +510,7 @@ ButtonDownRight:
                   MouseCurrentSpeedToDirection *= -1
                   MouseMove, %MouseCurrentSpeedToDirection%, %MouseCurrentSpeedToSide%, 0, R
                 }
-                else if Button = f
+                else if (Button = MOVE_RIGHT)
                 {
                   if Temp = 1
                   {
@@ -492,45 +519,34 @@ ButtonDownRight:
                   }
                   MouseMove, %MouseCurrentSpeedToDirection%, %MouseCurrentSpeedToSide%, 0, R
                 }
-                else if Button = NumpadHome
+                else if (Button = MOVE_UP_RIGHT)
                 {
-                  Temp = %MouseCurrentSpeedToDirection%
-                  Temp -= %MouseCurrentSpeedToSide%
-                  Temp *= -1
-                  Temp2 = %MouseCurrentSpeedToDirection%
-                  Temp2 += %MouseCurrentSpeedToSide%
-                  Temp2 *= -1
+                  Temp = (%MouseCurrentSpeedToDirection% - %MouseCurrentSpeedToSide%) * -1
+                  Temp2 = (%MouseCurrentSpeedToDirection% + %MouseCurrentSpeedToSide%) * -1
                   MouseMove, %Temp%, %Temp2%, 0, R
                 }
-                else if Button = NumpadPgUp
+                else if (Button = MOVE_UP_LEFT)
                 {
-                  Temp = %MouseCurrentSpeedToDirection%
-                  Temp += %MouseCurrentSpeedToSide%
-                  Temp2 = %MouseCurrentSpeedToDirection%
-                  Temp2 -= %MouseCurrentSpeedToSide%
-                  Temp2 *= -1
+                  Temp = %MouseCurrentSpeedToDirection% + %MouseCurrentSpeedToSide%
+                  Temp2 = (%MouseCurrentSpeedToDirection% - %MouseCurrentSpeedToSide%) * -1
                   MouseMove, %Temp%, %Temp2%, 0, R
                 }
-                else if Button = NumpadEnd
+                else if (Button = MOVE_DOWN_LEFT)
                 {
-                  Temp = %MouseCurrentSpeedToDirection%
-                  Temp += %MouseCurrentSpeedToSide%
-                  Temp *= -1
-                  Temp2 = %MouseCurrentSpeedToDirection%
-                  Temp2 -= %MouseCurrentSpeedToSide%
+                  Temp = (%MouseCurrentSpeedToDirection% + %MouseCurrentSpeedToSide%) * -1
+                  Temp2 = %MouseCurrentSpeedToDirection% - %MouseCurrentSpeedToSide%
                   MouseMove, %Temp%, %Temp2%, 0, R
                 }
-                else if Button = NumpadPgDn
+                else if (Button = MOVE_DOWN_RIGHT)
                 {
-                  Temp = %MouseCurrentSpeedToDirection%
-                  Temp -= %MouseCurrentSpeedToSide%
+                  Temp = (%MouseCurrentSpeedToDirection% - %MouseCurrentSpeedToSide%)
                   Temp2 *= -1
-                  Temp2 = %MouseCurrentSpeedToDirection%
-                  Temp2 += %MouseCurrentSpeedToSide%
+                  Temp2 = %MouseCurrentSpeedToDirection% + %MouseCurrentSpeedToSide%
                   MouseMove, %Temp%, %Temp2%, 0, R
                 }
                 SetTimer, ButtonAccelerationEnd, 10
 return
+
 
 ButtonAccelerationEnd:
   GetKeyState, kstate, %Button%, P
@@ -548,7 +564,7 @@ return
 ButtonWheelSpeedUp:
   MouseWheelSpeed++
   RegRead, MouseWheelSpeedMultiplier, HKCU, Control Panel\Desktop, WheelScrollLines
-  If MouseWheelSpeedMultiplier <= 0
+  if MouseWheelSpeedMultiplier <= 0
     MouseWheelSpeedMultiplier = 1
   MouseWheelSpeedReal = %MouseWheelSpeed%
   MouseWheelSpeedReal *= %MouseWheelSpeedMultiplier%
@@ -558,15 +574,15 @@ return
 
 ButtonWheelSpeedDown:
   RegRead, MouseWheelSpeedMultiplier, HKCU, Control Panel\Desktop, WheelScrollLines
-  If MouseWheelSpeedMultiplier <= 0
+  if MouseWheelSpeedMultiplier <= 0
     MouseWheelSpeedMultiplier = 1
-  If MouseWheelSpeedReal > %MouseWheelSpeedMultiplier%
+  if MouseWheelSpeedReal > %MouseWheelSpeedMultiplier%
   {
     MouseWheelSpeed--
     MouseWheelSpeedReal = %MouseWheelSpeed%
     MouseWheelSpeedReal *= %MouseWheelSpeedMultiplier%
   }
-  If MouseWheelSpeedReal = 1
+  if MouseWheelSpeedReal = 1
     ToolTip, Mouse wheel speed: %MouseWheelSpeedReal% line
   else
     ToolTip, Mouse wheel speed: %MouseWheelSpeedReal% lines
@@ -576,7 +592,7 @@ return
 ButtonWheelAccelerationSpeedUp:
   MouseWheelAccelerationSpeed++
   RegRead, MouseWheelSpeedMultiplier, HKCU, Control Panel\Desktop, WheelScrollLines
-  If MouseWheelSpeedMultiplier <= 0
+  if MouseWheelSpeedMultiplier <= 0
     MouseWheelSpeedMultiplier = 1
   MouseWheelAccelerationSpeedReal = %MouseWheelAccelerationSpeed%
   MouseWheelAccelerationSpeedReal *= %MouseWheelSpeedMultiplier%
@@ -586,15 +602,15 @@ return
 
 ButtonWheelAccelerationSpeedDown:
   RegRead, MouseWheelSpeedMultiplier, HKCU, Control Panel\Desktop, WheelScrollLines
-  If MouseWheelSpeedMultiplier <= 0
+  if MouseWheelSpeedMultiplier <= 0
     MouseWheelSpeedMultiplier = 1
-  If MouseWheelAccelerationSpeed > 1
+  if MouseWheelAccelerationSpeed > 1
   {
     MouseWheelAccelerationSpeed--
     MouseWheelAccelerationSpeedReal = %MouseWheelAccelerationSpeed%
     MouseWheelAccelerationSpeedReal *= %MouseWheelSpeedMultiplier%
   }
-  If MouseWheelAccelerationSpeedReal = 1
+  if MouseWheelAccelerationSpeedReal = 1
     ToolTip, Mouse wheel acceleration speed: %MouseWheelAccelerationSpeedReal% line
   else
     ToolTip, Mouse wheel acceleration speed: %MouseWheelAccelerationSpeedReal% lines
@@ -604,7 +620,7 @@ return
 ButtonWheelMaxSpeedUp:
   MouseWheelMaxSpeed++
   RegRead, MouseWheelSpeedMultiplier, HKCU, Control Panel\Desktop, WheelScrollLines
-  If MouseWheelSpeedMultiplier <= 0
+  if MouseWheelSpeedMultiplier <= 0
     MouseWheelSpeedMultiplier = 1
   MouseWheelMaxSpeedReal = %MouseWheelMaxSpeed%
   MouseWheelMaxSpeedReal *= %MouseWheelSpeedMultiplier%
@@ -614,15 +630,15 @@ return
 
 ButtonWheelMaxSpeedDown:
   RegRead, MouseWheelSpeedMultiplier, HKCU, Control Panel\Desktop, WheelScrollLines
-  If MouseWheelSpeedMultiplier <= 0
+  if MouseWheelSpeedMultiplier <= 0
     MouseWheelSpeedMultiplier = 1
-  If MouseWheelMaxSpeed > 1
+  if MouseWheelMaxSpeed > 1
   {
     MouseWheelMaxSpeed--
     MouseWheelMaxSpeedReal = %MouseWheelMaxSpeed%
     MouseWheelMaxSpeedReal *= %MouseWheelSpeedMultiplier%
   }
-  If MouseWheelMaxSpeedReal = 1
+  if MouseWheelMaxSpeedReal = 1
     ToolTip, Mouse wheel maximum speed: %MouseWheelMaxSpeedReal% line
   else
     ToolTip, Mouse wheel maximum speed: %MouseWheelMaxSpeedReal% lines
@@ -631,9 +647,9 @@ return
 
 ButtonWheelUp:
 ButtonWheelDown:
-  If Button <> 0
+  if Button <> 0
   {
-    If Button <> %A_ThisHotkey%
+    if Button <> %A_ThisHotkey%
     {
       MouseWheelCurrentAccelerationSpeed = 0
       MouseWheelCurrentSpeed = %MouseWheelSpeed%
@@ -642,9 +658,9 @@ ButtonWheelDown:
   StringReplace, Button, A_ThisHotkey, *
 
   ButtonWheelAccelerationStart:
-  If MouseWheelAccelerationSpeed >= 1
+  if MouseWheelAccelerationSpeed >= 1
   {
-    If MouseWheelMaxSpeed > %MouseWheelCurrentSpeed%
+    if MouseWheelMaxSpeed > %MouseWheelCurrentSpeed%
     {
       Temp = 0.001
       Temp *= %MouseWheelAccelerationSpeed%
@@ -653,7 +669,7 @@ ButtonWheelDown:
     }
   }
 
-  If Button = NumpadSub
+  if Button = NumpadSub
     MouseClick, WheelUp,,, %MouseWheelCurrentSpeed%, 0, D
   else if Button = NumpadAdd
     MouseClick, WheelDown,,, %MouseWheelCurrentSpeed%, 0, D
