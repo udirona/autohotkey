@@ -192,6 +192,7 @@ return
   GetKeyState, ScrollLockState, ScrollLock, T
   if ScrollLockState = D
   {
+    ToolTip, Mouse is on 
     Hotkey, *%MOVE_UP%, On
     Hotkey, *%MOVE_DOWN%, On
     Hotkey, *%MOVE_LEFT%, On
@@ -207,6 +208,7 @@ return
   }
   else
   {
+    ToolTip 
     Hotkey, *%MOVE_UP%, Off
     Hotkey, *%MOVE_DOWN%, Off
     Hotkey, *%MOVE_LEFT%, Off
