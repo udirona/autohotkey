@@ -1,7 +1,8 @@
-; Using Keyboard as a Mouse
+﻿; Using Keyboard as a Mouse
 ; changes by udirona
-;  using wersdfxcv instead of Numblock
-;  small code refactoring
+;  - using ScrollLock to activate mouse
+;  - configuration for move
+;  - small code refactoring
 
 
 
@@ -26,45 +27,7 @@
 |------------------------------------------------------------|
 | Keys                  | Description                        |
 |------------------------------------------------------------|
-| ScrollLock (toggle on)| Activates numpad mouse mode.       |
-|-----------------------|------------------------------------|
-| Numpad0               | Left mouse button click.           |
-| Numpad5               | Middle mouse button click.         |
-| NumpadDot             | Right mouse button click.          |
-| NumpadDiv/NumpadMult  | X1/X2 mouse button click. (Win 2k+)|
-| NumpadSub/NumpadAdd   | Moves up/down the mouse wheel.     |
-|                       |                                    |
-|-----------------------|------------------------------------|
-| NumLock (toggled off) | Activates mouse movement mode.     |
-|-----------------------|------------------------------------|
-| NumpadEnd/Down/PgDn/  | Mouse movement.                    |
-| /Left/Right/Home/Up/  |                                    |
-| /PgUp                 |                                    |
-|-----------------------|------------------------------------|
-| NumLock (toggled on)  | Activates mouse speed adj. mode.   |
-|-----------------------|------------------------------------|
-| Numpad7/Numpad1       | Inc./dec. acceleration per         |
-|                       | button press.                      |
-| Numpad8/Numpad2       | Inc./dec. initial speed per        |
-|                       | button press.                      |
-| Numpad9/Numpad3       | Inc./dec. maximum speed per        |
-|                       | button press.                      |
-| ^Numpad7/^Numpad1     | Inc./dec. wheel acceleration per   |
-|                       | button press*.                     |
-| ^Numpad8/^Numpad2     | Inc./dec. wheel initial speed per  |
-|                       | button press*.                     |
-| ^Numpad9/^Numpad3     | Inc./dec. wheel maximum speed per  |
-|                       | button press*.                     |
-| Numpad4/Numpad6       | Inc./dec. rotation angle to        |
-|                       | right in degrees. (i.e. 180� =     |
-|                       | = inversed controls).              |
-|------------------------------------------------------------|
-| * = These options are affected by the mouse wheel speed    |
-| adjusted on Control Panel. if you don't have a mouse with  |
-| wheel, the default is 3 +/- lines per option button press. |
-o------------------------------------------------------------o
 */
-
 ;START OF CONFIG SECTION
 
 #SingleInstance force
@@ -88,28 +51,21 @@ MouseMaxSpeed = 9
 MouseWheelSpeed = 1
 MouseWheelAccelerationSpeed = 1
 MouseWheelMaxSpeed = 5
-
 MouseRotationAngle = 0
 
-MOVE_UP            = e
-MOVE_DOWN          = d
-MOVE_LEFT          = s
-MOVE_RIGHT         = f
-MOVE_UP_LEFT       = w 
-MOVE_UP_RIGHT      = r
-MOVE_DOWN_LEFT     = x
+MOVE_UP            = w
+MOVE_DOWN          = s
+MOVE_LEFT          = a
+MOVE_RIGHT         = d
+MOVE_UP_LEFT       = q 
+MOVE_UP_RIGHT      = e
+MOVE_DOWN_LEFT     = z
 MOVE_DOWN_RIGHT    = c
-MOUSE_LEFT_CLICK   = q
+MOUSE_LEFT_CLICK   = Space
 MOUSE_MIDDLE_CLICK = a
-MOUSE_RIGHT_CLICK  = z
+MOUSE_RIGHT_CLICK  = x
 
 ;END OF CONFIG SECTION
-
-
-
-
-
-
 
 ;This is needed or key presses would faulty send their natural
 ;actions. Like NumpadDiv would send sometimes "/" to the
@@ -132,8 +88,8 @@ MouseRotationAnglePart /= 45
 MouseCurrentAccelerationSpeed = 0
 MouseCurrentSpeed = %MouseSpeed%
 
-MouseWheelCurrentAccelerationSpeed = 0
-MouseWheelCurrentSpeed = %MouseSpeed%
+;; MouseWheelCurrentAccelerationSpeed = 0
+;; MouseWheelCurrentSpeed = %MouseSpeed%
 
 SetKeyDelay, -1
 SetMouseDelay, -1
@@ -145,8 +101,6 @@ SetMouseDelay, -1
 ;; Hotkey, *NumpadDiv, ButtonX1Click
 ;; Hotkey, *NumpadMult, ButtonX2Click
 ;;
-;; Hotkey, *NumpadSub, ButtonWheelUp
-;; Hotkey, *NumpadAdd, ButtonWheelDown
 ;;
  Hotkey, *%MOVE_UP%, ButtonUp
  Hotkey, *%MOVE_DOWN%, ButtonDown
@@ -159,6 +113,9 @@ SetMouseDelay, -1
  Hotkey, *%MOUSE_LEFT_CLICK%, ButtonLeftClick
  Hotkey, *%MOUSE_MIDDLE_CLICK%, ButtonMiddleClick
  Hotkey, *%MOUSE_RIGHT_CLICK%, ButtonRightClick
+
+;; Hotkey, *NumpadSub, ButtonWheelUp
+;; Hotkey, *NumpadAdd, ButtonWheelDown
 ;; Hotkey, *, ButtonDownLeft
 ;; Hotkey, *, ButtonDownRight
 ;;
@@ -192,7 +149,10 @@ return
   GetKeyState, ScrollLockState, ScrollLock, T
   if ScrollLockState = D
   {
-    ToolTip, Mouse is on 
+    ;ToolTip, Mouse is on , 0, 0
+    SplashTextOn, 150, 50
+        , Mouse is ON
+        ,Up = %MOVE_UP% Down =%MOVE_DOWN%`n Left = %MOVE_LEFT% Right = %MOVE_RIGHT%
     Hotkey, *%MOVE_UP%, On
     Hotkey, *%MOVE_DOWN%, On
     Hotkey, *%MOVE_LEFT%, On
@@ -208,7 +168,8 @@ return
   }
   else
   {
-    ToolTip 
+    ; ToolTip 
+    SplashTextOff
     Hotkey, *%MOVE_UP%, Off
     Hotkey, *%MOVE_DOWN%, Off
     Hotkey, *%MOVE_LEFT%, Off
@@ -647,47 +608,47 @@ ButtonWheelMaxSpeedDown:
   SetTimer, RemoveToolTip, 1000
 return
 
-ButtonWheelUp:
-ButtonWheelDown:
-  if Button <> 0
-  {
-    if Button <> %A_ThisHotkey%
-    {
-      MouseWheelCurrentAccelerationSpeed = 0
-      MouseWheelCurrentSpeed = %MouseWheelSpeed%
-    }
-  }
-  StringReplace, Button, A_ThisHotkey, *
-
-  ButtonWheelAccelerationStart:
-  if MouseWheelAccelerationSpeed >= 1
-  {
-    if MouseWheelMaxSpeed > %MouseWheelCurrentSpeed%
-    {
-      Temp = 0.001
-      Temp *= %MouseWheelAccelerationSpeed%
-      MouseWheelCurrentAccelerationSpeed += %Temp%
-      MouseWheelCurrentSpeed += %MouseWheelCurrentAccelerationSpeed%
-    }
-  }
-
-  if Button = NumpadSub
-    MouseClick, WheelUp,,, %MouseWheelCurrentSpeed%, 0, D
-  else if Button = NumpadAdd
-    MouseClick, WheelDown,,, %MouseWheelCurrentSpeed%, 0, D
-
-  SetTimer, ButtonWheelAccelerationEnd, 100
-return
-
-ButtonWheelAccelerationEnd:
-  GetKeyState, kstate, %Button%, P
-  if kstate = D
-    Goto ButtonWheelAccelerationStart
-
-  MouseWheelCurrentAccelerationSpeed = 0
-  MouseWheelCurrentSpeed = %MouseWheelSpeed%
-  Button = 0
-return
+;; ButtonWheelUp:
+;; ButtonWheelDown:
+;;   if Button <> 0
+;;   {
+;;     if Button <> %A_ThisHotkey%
+;;     {
+;;       MouseWheelCurrentAccelerationSpeed = 0
+;;       MouseWheelCurrentSpeed = %MouseWheelSpeed%
+;;     }
+;;   }
+;;   StringReplace, Button, A_ThisHotkey, *
+;; 
+;;   ButtonWheelAccelerationStart:
+;;   if MouseWheelAccelerationSpeed >= 1
+;;   {
+;;     if MouseWheelMaxSpeed > %MouseWheelCurrentSpeed%
+;;     {
+;;       Temp = 0.001
+;;       Temp *= %MouseWheelAccelerationSpeed%
+;;       MouseWheelCurrentAccelerationSpeed += %Temp%
+;;       MouseWheelCurrentSpeed += %MouseWheelCurrentAccelerationSpeed%
+;;     }
+;;   }
+;; 
+;;   if Button = NumpadSub
+;;     MouseClick, WheelUp,,, %MouseWheelCurrentSpeed%, 0, D
+;;   else if Button = NumpadAdd
+;;     MouseClick, WheelDown,,, %MouseWheelCurrentSpeed%, 0, D
+;; 
+;;   SetTimer, ButtonWheelAccelerationEnd, 100
+;; return
+;; 
+;; ButtonWheelAccelerationEnd:
+;;   GetKeyState, kstate, %Button%, P
+;;   if kstate = D
+;;     Goto ButtonWheelAccelerationStart
+;; 
+;;   MouseWheelCurrentAccelerationSpeed = 0
+;;   MouseWheelCurrentSpeed = %MouseWheelSpeed%
+;;   Button = 0
+;; return
 
 RemoveToolTip:
   SetTimer, RemoveToolTip, Off
