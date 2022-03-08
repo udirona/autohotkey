@@ -1,3 +1,26 @@
+OSD(text)
+{
+	#Persistent
+	; borderless, no progressbar, font size 25, color text 009900
+	Progress, hide Y50 W200 b zh0 cwFFFFFF FM20 CT00BB00,, %text%, AutoHotKeyProgressBar, Backlash BRK
+	WinSet, TransColor, FFFFFF 255, AutoHotKeyProgressBar
+	Progress, show
+	SetTimer, RemoveToolTip, 1000
+
+	Return
+
+RemoveToolTip:
+	SetTimer, RemoveToolTip, Off
+	Progress, Off
+	return
+}
+
+;; get current key states
+;;^F12::
+;;  a := GetKeyState("Alt")
+;;  OSD("Alt " . a)
+;;return
+
 ;; open a global scratchpad
 Pause::
   Run, "C:\Program Files (x86)\Vim\vim80\gvim.exe" --servername SCRATCHPAD --remote-tab-silent E:\scratchpad.txt
@@ -6,13 +29,9 @@ return
 ;; toogle current window stay on top
 Alt & o::
   Winset, Alwaysontop, Toggle, A
-  Tooltip "Toggle Alwaysontop", 0, 0
-  SetTimer, RemoveToolTip, 1000
-return
-
-RemoveToolTip:
-  SetTimer, RemoveToolTip, Off
-  ToolTip
+  OSD("Toggle Always on top")
+  ;;Tooltip "Toggle Alwaysontop", 0, 0
+  ;;SetTimer, RemoveToolTip, 1000
 return
 
 #!Up::CenterActiveWindow() ; if win+alt is pressed
@@ -26,3 +45,7 @@ CenterActiveWindow()
     WinGetTitle, windowName, A
     WinMove, %windowName%, , A_ScreenWidthWA / 2 - (windowWidth / 2), 0, windowWidth, windowHeight
 }
+
+Alt & F1::
+  Run, mstsc
+return
